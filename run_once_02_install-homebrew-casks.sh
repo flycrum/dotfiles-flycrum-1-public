@@ -14,10 +14,18 @@ install_package() {
     local type="$2"  # "formula" or "cask"
     
     echo "Installing $package..."
-    if brew install "$package" 2>/dev/null || [[ $type == "cask" ]] && brew install --cask "$package" 2>/dev/null; then
-        echo "✅ Successfully installed $package"
+    if [[ $type == "cask" ]]; then
+        if brew install --cask "$package" 2>/dev/null; then
+            echo "✅ Successfully installed $package"
+        else
+            echo "⚠️  Failed to install $package (continuing...)"
+        fi
     else
-        echo "⚠️  Failed to install $package (continuing...)"
+        if brew install "$package" 2>/dev/null; then
+            echo "✅ Successfully installed $package"
+        else
+            echo "⚠️  Failed to install $package (continuing...)"
+        fi
     fi
 }
 
@@ -32,4 +40,4 @@ echo "🎉 Essential tools installation complete!"
 echo ""
 echo "📝 Next steps:"
 echo "   • Restart terminal to use nvm"
-echo "   • Open Karabiner-Elements to configure keyboard" 
+echo "   • Open Karabiner-Elements to configure keyboard"

@@ -1,6 +1,13 @@
-# Chezmoi How to Use
+# Using the CLI for daily commands
 
 ## Common Commands
+
+### Happy path
+
+1. `chezmoi add ~/.gitconfig`
+2. `chezmoi diff`
+3. `chezmoi apply`
+4. `git add . && git commit -m "Apply chezmoi changes and update documentation" && git push`
 
 ### Adding Files to Management
 
@@ -85,8 +92,6 @@ chezmoi --source ~/.local/share/chezmoi-private update
 # Or create aliases for convenience
 alias chezmoi-private="chezmoi --source ~/.local/share/chezmoi-private"
 ```
-
-
 
 ## Tips
 

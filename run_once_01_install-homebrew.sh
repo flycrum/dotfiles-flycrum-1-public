@@ -32,4 +32,4 @@ if ! brew --version &> /dev/null; then
     exit 1
 fi
 
-echo "🎉 Homebrew setup complete!" 
+echo "🎉 Homebrew setup complete!"
