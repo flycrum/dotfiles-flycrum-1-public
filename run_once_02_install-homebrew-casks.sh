@@ -1,0 +1,35 @@
+#!/bin/bash
+
+echo "🔧 Installing essential tools..."
+
+# Check that Homebrew is available
+if ! command -v brew &> /dev/null; then
+    echo "❌ Error: Homebrew not found. Please run install-homebrew.sh first"
+    exit 1
+fi
+
+# Function to install with error handling
+install_package() {
+    local package="$1"
+    local type="$2"  # "formula" or "cask"
+    
+    echo "Installing $package..."
+    if brew install "$package" 2>/dev/null || [[ $type == "cask" ]] && brew install --cask "$package" 2>/dev/null; then
+        echo "✅ Successfully installed $package"
+    else
+        echo "⚠️  Failed to install $package (continuing...)"
+    fi
+}
+
+# Install packages
+echo "📦 Installing packages..."
+
+install_package "nvm" "formula"
+install_package "karabiner-elements" "cask"
+
+echo ""
+echo "🎉 Essential tools installation complete!"
+echo ""
+echo "📝 Next steps:"
+echo "   • Restart terminal to use nvm"
+echo "   • Open Karabiner-Elements to configure keyboard" 
