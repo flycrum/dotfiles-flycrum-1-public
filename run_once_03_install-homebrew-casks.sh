@@ -51,8 +51,8 @@ fi
 
 # Install Karabiner-Elements
 if install_cask "karabiner-elements"; then
-    echo ""
-    echo "❗❗❗ IMPORTANT: Karabiner-Elements Security Setup ❗❗❗"
+    echo "Installing Karabiner-Elements..."
+    echo "❗IMPORTANT: Karabiner-Elements Security Setup"
     echo "1. Go to System Settings > Privacy & Security > Input Monitoring"
     echo "2. Enable 'karabiner_grabber' and 'karabiner_observer'"
     echo "3. Then manually open Karabiner-Elements from Applications"
@@ -62,6 +62,10 @@ if install_cask "karabiner-elements"; then
 else
     add_next_step "⚠️ Install Karabiner-Elements manually if needed"
 fi
+
+# Install Kitty terminal emulator
+echo "Installing Kitty..."
+install_cask "kitty"
 
 echo ""
 echo "🪣 Essential tools installation complete!"

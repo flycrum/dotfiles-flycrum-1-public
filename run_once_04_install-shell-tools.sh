@@ -53,7 +53,7 @@ install_package "fzf" "formula"
 install_package "zoxide" "formula"
 
 echo "🔤 Installing required font..."
-install_package "font-meslo-lg-nerd-font" "cask"
+install_package "font-jetbrains-mono-nerd-font" "cask"
 
 # Fix zsh compinit security warnings
 echo "🔧 Fixing zsh completion permissions..."
