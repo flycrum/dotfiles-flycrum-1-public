@@ -21,40 +21,47 @@ if ! [ -x "$USER_HOMEBREW_BIN/brew" ]; then
     exit 1
 fi
 
-# Function to install with error handling
-install_package() {
+# Function to install casks with error handling
+install_cask() {
     local package="$1"
-    local type="$2"  # "formula" or "cask"
     
     echo "Installing $package..."
-    if [[ $type == "cask" ]]; then
-        # Install casks (automatically goes to user's Applications directory via HOMEBREW_CASK_OPTS)
-        if brew install --cask "$package" 2>/dev/null; then
-            echo "Successfully installed $package to $USER_APPLICATIONS_DIR"
-        else
-            echo "⚠️ Failed to install $package (continuing...)"
-        fi
+    if brew install --cask "$package" 2>/dev/null; then
+        echo "✅ Successfully installed $package to $USER_APPLICATIONS_DIR"
     else
-        if brew install "$package" 2>/dev/null; then
-            echo "Successfully installed $package"
-        else
-            echo "⚠️ Failed to install $package (continuing...)"
-        fi
+        echo "⚠️ Failed to install $package (continuing...)"
+        return 1
     fi
 }
 
 # Install packages
 echo "📦 Installing packages..."
 
-install_package "nvm" "formula"
-install_package "karabiner-elements" "cask"
+# Install nvm the proper way (not via Homebrew)
+echo "Installing nvm..."
+if curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash; then
+    echo "✅ Successfully installed nvm"
+    # Source nvm immediately for this session
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+else
+    echo "⚠️ Failed to install nvm (continuing...)"
+fi
 
-# Auto-open Karabiner-Elements from user Applications directory
-echo "🚀 Opening Karabiner-Elements so config changes take effect and our keybinding are immediately available..."
-open -a "$USER_APPLICATIONS_DIR/Karabiner-Elements.app" 2>/dev/null || echo "⚠️  Could not auto-open Karabiner-Elements"
-
-# Add to next steps queue
-add_next_step "⌨️ Open Karabiner-Elements to have your keybindings take immediate effect"
+# Install Karabiner-Elements
+if install_cask "karabiner-elements"; then
+    echo ""
+    echo "❗❗❗ IMPORTANT: Karabiner-Elements Security Setup ❗❗❗"
+    echo "1. Go to System Settings > Privacy & Security > Input Monitoring"
+    echo "2. Enable 'karabiner_grabber' and 'karabiner_observer'"
+    echo "3. Then manually open Karabiner-Elements from Applications"
+    echo ""
+    add_next_step "🔒 Grant Karabiner-Elements Input Monitoring permissions in System Settings"
+    add_next_step "⌨️ Open Karabiner-Elements to configure your keybindings"
+else
+    add_next_step "⚠️ Install Karabiner-Elements manually if needed"
+fi
 
 echo ""
-echo "🪣 Homebrew Casks installation complete!"
+echo "🪣 Essential tools installation complete!"
