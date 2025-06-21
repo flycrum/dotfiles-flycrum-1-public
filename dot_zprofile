@@ -1,2 +1,5 @@
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Auto-load SSH keys from keychain
+ssh-add --apple-load-keychain 2>/dev/null
