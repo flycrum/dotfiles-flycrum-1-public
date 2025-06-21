@@ -1,0 +1,12 @@
+# Minimal zshrc bridge file
+# Sources actual configuration from XDG config directory
+
+# Source the main configuration file
+if [[ -f "$XDG_CONFIG_HOME/zsh/config.zsh" ]]; then
+    source "$XDG_CONFIG_HOME/zsh/config.zsh"
+else
+    echo "Warning: $XDG_CONFIG_HOME/zsh/config.zsh not found"
+fi
+
+# Add chezmoi to PATH
+export PATH="$HOME/bin:$PATH"
