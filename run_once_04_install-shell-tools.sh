@@ -5,7 +5,7 @@ set -e
 
 # Function to add steps to the next steps queue
 add_next_step() {
-    echo "$1" >> "/tmp/chezmoi_next_steps_$$"
+    echo "$1" >> "/tmp/chezmoi_next_steps"
 }
 
 echo "🐚 Installing shell tools and dependencies..."
@@ -55,13 +55,14 @@ install_package "font-meslo-lg-nerd-font" "cask"
 
 # Fix zsh compinit security warnings
 echo "🔧 Fixing zsh completion permissions..."
-if command -v compaudit &> /dev/null; then
-    # Get list of insecure directories and fix them
-    compaudit 2>/dev/null | xargs chmod g-w,o-w 2>/dev/null || true
-    echo "✅ Fixed zsh completion permissions"
-else
-    echo "⚠️  compaudit not available, skipping permission fix"
-fi
+# Fix common insecure directories that cause zsh warnings
+for dir in /usr/local/share/zsh /usr/local/share/zsh/site-functions /opt/homebrew/share/zsh /opt/homebrew/share/zsh/site-functions; do
+    if [[ -d "$dir" ]]; then
+        chmod -R go-w "$dir" 2>/dev/null || true
+        echo "✅ Fixed permissions for $dir"
+    fi
+done
+echo "✅ Zsh completion permissions updated"
 
 # Add to next steps queue
 add_next_step "▶️ Start Zinit plugin manager to auto-install on first shell startup"

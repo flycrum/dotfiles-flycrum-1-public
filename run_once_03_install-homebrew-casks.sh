@@ -2,7 +2,7 @@
 
 # Function to add steps to the next steps queue
 add_next_step() {
-    echo "$1" >> "/tmp/chezmoi_next_steps_$$"
+    echo "$1" >> "/tmp/chezmoi_next_steps"
 }
 
 echo "🔧 Installing essential tools..."

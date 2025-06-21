@@ -3,7 +3,7 @@
 # Final script to display collected next steps and finish setup
 set -e
 
-QUEUE_FILE="/tmp/chezmoi_next_steps_$$"
+QUEUE_FILE="/tmp/chezmoi_next_steps"
 
 echo ""
 echo "🎉 Chezmoi dotfiles setup complete!"
