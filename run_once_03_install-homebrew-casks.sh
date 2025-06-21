@@ -7,18 +7,14 @@ add_next_step() {
 
 echo "🔧 Installing essential tools..."
 
-# Ensure Homebrew is in PATH
-if [[ $(uname -m) == "arm64" ]]; then
-    # Apple Silicon Mac
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-else
-    # Intel Mac
-    eval "$(/usr/local/bin/brew shellenv)"
-fi
+# Ensure user-specific Homebrew is in PATH
+USER_HOMEBREW_BIN="$HOME/.homebrew/bin"
+export PATH="$USER_HOMEBREW_BIN:$PATH"
 
-# Check that Homebrew is available
-if ! command -v brew &> /dev/null; then
-    echo "❌ Error: Homebrew not found. Please run install-homebrew.sh first"
+# Check that user Homebrew is available
+if ! [ -x "$USER_HOMEBREW_BIN/brew" ]; then
+    echo "❌ Error: User-specific Homebrew not found at $USER_HOMEBREW_BIN"
+    echo "Please run the Homebrew installation script first (run_once_02_install-homebrew.sh)"
     exit 1
 fi
 

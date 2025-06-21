@@ -10,16 +10,14 @@ add_next_step() {
 
 echo "🐚 Installing shell tools and dependencies..."
 
-# Ensure Homebrew is in PATH
-if [[ $(uname -m) == "arm64" ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-else
-    eval "$(/usr/local/bin/brew shellenv)"
-fi
+# Ensure user-specific Homebrew is in PATH
+USER_HOMEBREW_BIN="$HOME/.homebrew/bin"
+export PATH="$USER_HOMEBREW_BIN:$PATH"
 
-# Check that Homebrew is available
-if ! command -v brew &> /dev/null; then
-    echo "❌ Error: Homebrew not found. Please run install-homebrew.sh first"
+# Check that user Homebrew is available
+if ! [ -x "$USER_HOMEBREW_BIN/brew" ]; then
+    echo "❌ Error: User-specific Homebrew not found at $USER_HOMEBREW_BIN"
+    echo "Please run the Homebrew installation script first (run_once_02_install-homebrew.sh)"
     exit 1
 fi
 
@@ -55,8 +53,10 @@ install_package "font-meslo-lg-nerd-font" "cask"
 
 # Fix zsh compinit security warnings
 echo "🔧 Fixing zsh completion permissions..."
-# Fix common insecure directories that cause zsh warnings
-for dir in /usr/local/share/zsh /usr/local/share/zsh/site-functions /opt/homebrew/share/zsh /opt/homebrew/share/zsh/site-functions; do
+# Fix user homebrew and common insecure directories that cause zsh warnings
+USER_HOMEBREW_ZSH="$HOME/.homebrew/share/zsh"
+USER_HOMEBREW_ZSH_SITE="$HOME/.homebrew/share/zsh/site-functions"
+for dir in "$USER_HOMEBREW_ZSH" "$USER_HOMEBREW_ZSH_SITE" /usr/local/share/zsh /usr/local/share/zsh/site-functions /opt/homebrew/share/zsh /opt/homebrew/share/zsh/site-functions; do
     if [[ -d "$dir" ]]; then
         chmod -R go-w "$dir" 2>/dev/null || true
         echo "✅ Fixed permissions for $dir"

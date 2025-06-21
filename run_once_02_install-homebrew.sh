@@ -8,55 +8,62 @@ add_next_step() {
     echo "$1" >> "/tmp/chezmoi_next_steps"
 }
 
-echo "🍺 Installing Homebrew..."
+echo "🍺 Installing Homebrew (user-specific)..."
 
-# Install Homebrew if not already installed
-if ! command -v brew &> /dev/null; then
-    echo "Homebrew not found, installing..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# Define user-specific Homebrew paths
+USER_HOMEBREW_PREFIX="$HOME/.homebrew"
+USER_HOMEBREW_BIN="$USER_HOMEBREW_PREFIX/bin"
+USER_HOMEBREW_CELLAR="$USER_HOMEBREW_PREFIX/Cellar"
+
+# Install Homebrew if not already installed in user directory
+if ! [ -x "$USER_HOMEBREW_BIN/brew" ]; then
+    echo "User-specific Homebrew not found, installing to $USER_HOMEBREW_PREFIX..."
     
-    # Add Homebrew to PATH for the current session
-    if [[ $(uname -m) == "arm64" ]]; then
-        # Apple Silicon Mac
-        echo "Adding Homebrew to PATH (Apple Silicon)..."
-        eval "$(/opt/homebrew/bin/brew shellenv)"
-        BREW_PREFIX="/opt/homebrew"
-    else
-        # Intel Mac
-        echo "Adding Homebrew to PATH (Intel)..."
-        eval "$(/usr/local/bin/brew shellenv)"
-        BREW_PREFIX="/usr/local"
-    fi
+    # Create the homebrew directory
+    mkdir -p "$USER_HOMEBREW_PREFIX"
     
-    # Permanently add to shell profile (.zprofile created by run_once_00_zprofile.sh)
-    SHELL_PROFILE="$HOME/.zprofile"
-    BREW_SHELLENV_LINE='eval "$('$BREW_PREFIX'/bin/brew shellenv)"'
+    # Download and install Homebrew to user directory
+    curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C "$USER_HOMEBREW_PREFIX"
     
-    if ! grep -q "$BREW_PREFIX/bin/brew shellenv" "$SHELL_PROFILE" 2>/dev/null; then
-        echo "Adding Homebrew to $SHELL_PROFILE for permanent PATH..."
-        echo "" >> "$SHELL_PROFILE"
-        echo "# Add Homebrew to PATH" >> "$SHELL_PROFILE"
-        echo "$BREW_SHELLENV_LINE" >> "$SHELL_PROFILE"
-        echo "✅ Added Homebrew to shell profile"
-        
-        # Source the profile immediately so brew is available in this session
-        source "$SHELL_PROFILE"
-    else
-        echo "✅ Homebrew already in shell profile"
-    fi
-    
-    echo "✅ Homebrew installed successfully!"
+    echo "✅ Homebrew installed to user directory!"
 else
-    echo "✅ Homebrew already installed, skipping..."
+    echo "✅ User-specific Homebrew already installed, skipping..."
+fi
+
+# Add user Homebrew to PATH for the current session
+export PATH="$USER_HOMEBREW_BIN:$PATH"
+
+# Permanently add to shell profile (.zprofile created by run_once_00_zprofile.sh)
+SHELL_PROFILE="$HOME/.zprofile"
+BREW_PATH_LINE='export PATH="$HOME/.homebrew/bin:$PATH"'
+
+if ! grep -q '\.homebrew/bin' "$SHELL_PROFILE" 2>/dev/null; then
+    echo "Adding user Homebrew to $SHELL_PROFILE for permanent PATH..."
+    echo "" >> "$SHELL_PROFILE"
+    echo "# Add user-specific Homebrew to PATH" >> "$SHELL_PROFILE"
+    echo "$BREW_PATH_LINE" >> "$SHELL_PROFILE"
+    echo "✅ Added user Homebrew to shell profile"
+    
+    # Source the profile immediately so brew is available in this session
+    source "$SHELL_PROFILE"
+else
+    echo "✅ User Homebrew already in shell profile"
 fi
 
 # Verify brew is working
-if ! brew --version &> /dev/null; then
-    echo "❌ Error: Homebrew installation failed"
+if ! "$USER_HOMEBREW_BIN/brew" --version &> /dev/null; then
+    echo "❌ Error: User Homebrew installation failed"
     exit 1
 fi
+
+# Show isolation info
+echo "🏠 Homebrew Isolation Info:"
+echo "   📍 Installation: $USER_HOMEBREW_PREFIX"
+echo "   👤 User: $(whoami)"
+echo "   🆔 User ID: $(id -u)"
+echo "   🔒 This installation is completely isolated from other users"
 
 # Add to next steps queue
 add_next_step "🔁 Restart terminal for Homebrew PATH changes to take effect"
 
-echo "🍺 Homebrew setup complete!"
+echo "🍺 User-specific Homebrew setup complete!"
