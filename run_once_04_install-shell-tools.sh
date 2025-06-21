@@ -14,6 +14,9 @@ echo "🐚 Installing shell tools and dependencies..."
 USER_HOMEBREW_BIN="$HOME/.homebrew/bin"
 export PATH="$USER_HOMEBREW_BIN:$PATH"
 
+# Set user Applications directory (Homebrew configured to use this automatically)
+USER_APPLICATIONS_DIR="$HOME/Applications"
+
 # Check that user Homebrew is available
 if ! [ -x "$USER_HOMEBREW_BIN/brew" ]; then
     echo "❌ Error: User-specific Homebrew not found at $USER_HOMEBREW_BIN"
@@ -28,16 +31,17 @@ install_package() {
     
     echo "Installing $package..."
     if [[ $type == "cask" ]]; then
+        # Install casks (automatically goes to user's Applications directory via HOMEBREW_CASK_OPTS)
         if brew install --cask "$package" 2>/dev/null; then
-            echo "✅ Successfully installed $package"
+            echo "Successfully installed $package to $USER_APPLICATIONS_DIR"
         else
-            echo "⚠️  Failed to install $package (continuing...)"
+            echo "⚠️ Failed to install $package (continuing...)"
         fi
     else
         if brew install "$package" 2>/dev/null; then
-            echo "✅ Successfully installed $package"
+            echo "Successfully installed $package"
         else
-            echo "⚠️  Failed to install $package (continuing...)"
+            echo "⚠️ Failed to install $package (continuing...)"
         fi
     fi
 }
@@ -62,7 +66,7 @@ for dir in "$USER_HOMEBREW_ZSH" "$USER_HOMEBREW_ZSH_SITE" /usr/local/share/zsh /
         echo "✅ Fixed permissions for $dir"
     fi
 done
-echo "✅ Zsh completion permissions updated"
+echo "🔒 Zsh completion permissions updated"
 
 # Add to next steps queue
 add_next_step "▶️ Start Zinit plugin manager to auto-install on first shell startup"

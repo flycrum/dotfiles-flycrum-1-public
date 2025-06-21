@@ -10,7 +10,7 @@ add_next_step() {
 
 echo "⚙️ Configuring macOS preferences..."
 # Finder preferences
-echo "📁 Configuring Finder..."
+echo "Configuring Finder..."
 # Show hidden files in Finder
 defaults write com.apple.finder AppleShowAllFiles -bool true
 # Show full path breadcrumbs at bottom of Finder
@@ -34,7 +34,7 @@ defaults write com.apple.dock show-recents -bool false
 # Minimize windows using scale effect
 defaults write com.apple.dock mineffect -string scale
 
-echo "🔄 Restarting affected applications..."
+echo "Restarting affected applications..."
 # Kill and restart Finder
 killall Finder
 # Kill and restart Dock

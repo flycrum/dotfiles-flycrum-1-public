@@ -25,29 +25,39 @@ if ! [ -x "$USER_HOMEBREW_BIN/brew" ]; then
     # Download and install Homebrew to user directory
     curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C "$USER_HOMEBREW_PREFIX"
     
-    echo "✅ Homebrew installed to user directory!"
+    echo "Homebrew installed to user directory!"
 else
-    echo "✅ User-specific Homebrew already installed, skipping..."
+    echo "User-specific Homebrew already installed, skipping..."
 fi
 
 # Add user Homebrew to PATH for the current session
 export PATH="$USER_HOMEBREW_BIN:$PATH"
 
+# Create user Applications directory for cask installs
+USER_APPLICATIONS_DIR="$HOME/Applications"
+mkdir -p "$USER_APPLICATIONS_DIR"
+
+# Configure Homebrew to use user Applications directory by default
+export HOMEBREW_CASK_OPTS="--appdir=$USER_APPLICATIONS_DIR"
+
 # Permanently add to shell profile (.zprofile created by run_once_00_zprofile.sh)
 SHELL_PROFILE="$HOME/.zprofile"
 BREW_PATH_LINE='export PATH="$HOME/.homebrew/bin:$PATH"'
+BREW_CASK_LINE='export HOMEBREW_CASK_OPTS="--appdir=$HOME/Applications"'
 
 if ! grep -q '\.homebrew/bin' "$SHELL_PROFILE" 2>/dev/null; then
-    echo "Adding user Homebrew to $SHELL_PROFILE for permanent PATH..."
+    echo "Adding user Homebrew configuration to $SHELL_PROFILE..."
     echo "" >> "$SHELL_PROFILE"
     echo "# Add user-specific Homebrew to PATH" >> "$SHELL_PROFILE"
     echo "$BREW_PATH_LINE" >> "$SHELL_PROFILE"
-    echo "✅ Added user Homebrew to shell profile"
+    echo "# Configure Homebrew casks to install to user Applications directory" >> "$SHELL_PROFILE"
+    echo "$BREW_CASK_LINE" >> "$SHELL_PROFILE"
+    echo "Added user Homebrew configuration to shell profile"
     
     # Source the profile immediately so brew is available in this session
     source "$SHELL_PROFILE"
 else
-    echo "✅ User Homebrew already in shell profile"
+    echo "User Homebrew already in shell profile"
 fi
 
 # Verify brew is working

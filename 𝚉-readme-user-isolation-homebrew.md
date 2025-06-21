@@ -1,47 +1,53 @@
-# 🏠 User Isolation & Sandboxing Strategy
+# 🏠 Complete User Isolation: Homebrew + Apps + Auto-Config
 
 ## The Problem 🚫
-When testing chezmoi with multiple users on the same Mac, system-wide Homebrew creates conflicts:
-- User ID conflicts cause: `Permission denied @ rb_sysopen`
-- Different users step on each other's Homebrew installation
+Multi-user chezmoi testing = permission nightmares! System-wide Homebrew causes:
+- `Permission denied @ rb_sysopen` errors between users
+- File ownership conflicts that break installations
 
 ## The Solution 🎯
-**User-Specific Homebrew** - Each user installs to `~/.homebrew/` instead of system-wide `/opt/homebrew/`
+**Fully Isolated User Environments** with automatic configuration:
 
 ```bash
-# Traditional (BAD): /opt/homebrew/          ← Shared, causes conflicts
-# Our approach (GOOD): ~/.homebrew/          ← Per-user, isolated
+# 💩 Traditional (Shared Hell):
+/opt/homebrew/     ← Everyone fights over this
+/Applications/     ← Apps step on each other
+
+# 😎 Our Approach (Isolated Paradise):
+~/.homebrew/       ← Your personal Homebrew
+~/Applications/    ← Your personal apps
 ```
 
-## Benefits 🔒
-- Complete separation between users
-- Safe testing without affecting primary user
-- No permission conflicts possible
+## Magic Auto-Configuration ✨
+Our setup automatically configures Homebrew so **every future cask install** goes to your user directory:
 
-## Testing Multi-User 🧪
 ```bash
-# Create test user
-sudo dscl . -create /Users/testuser
-sudo dscl . -create /Users/testuser UserShell /bin/zsh
-sudo dscl . -create /Users/testuser UniqueID 503
-sudo dscl . -create /Users/testuser PrimaryGroupID 20
-sudo dscl . -create /Users/testuser NFSHomeDirectory /Users/testuser
-sudo createhomedir -c -u testuser
+export HOMEBREW_CASK_OPTS="--appdir=$HOME/Applications"
+```
 
-# Test as new user
-sudo su - testuser
-sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply flycrum/dotfiles-flycrum-1-public
+This means:
+- ✅ `brew install --cask discord` → `~/Applications/Discord.app`
+- ✅ `brew install --cask notion` → `~/Applications/Notion.app` 
+- ✅ No more `--appdir` flags needed anywhere!
+
+## Benefits 🚀
+- **Zero conflicts**: Each user completely sandboxed
+- **Auto-magic**: Set once, works forever
+- **Clean testing**: Create/destroy users safely
+- **Transparent**: Just works like normal Homebrew
+
+## Quick Test 🧪
+```bash
+# After chezmoi setup, test isolation:
+brew install --cask raycast     # Goes to ~/Applications/ automatically
+which brew                      # Shows ~/.homebrew/bin/brew
+echo $HOMEBREW_CASK_OPTS       # Shows your auto-config
 ```
 
 ## Cleanup 🧹
 ```bash
+# Nuke test user completely (no traces left)
 sudo dscl . -delete /Users/testuser && sudo rm -rf /Users/testuser
 ```
 
-## Verification 🔍
-```bash
-which brew        # Should show ~/.homebrew/bin/brew
-brew --prefix     # Should show /Users/username/.homebrew
-```
-
-Each user gets their own isolated Homebrew installation! 🎉 
+**Result**: Perfect user isolation with zero manual configuration! 🎉 

@@ -11,6 +11,9 @@ echo "🔧 Installing essential tools..."
 USER_HOMEBREW_BIN="$HOME/.homebrew/bin"
 export PATH="$USER_HOMEBREW_BIN:$PATH"
 
+# Set user Applications directory (Homebrew configured to use this automatically)
+USER_APPLICATIONS_DIR="$HOME/Applications"
+
 # Check that user Homebrew is available
 if ! [ -x "$USER_HOMEBREW_BIN/brew" ]; then
     echo "❌ Error: User-specific Homebrew not found at $USER_HOMEBREW_BIN"
@@ -25,16 +28,17 @@ install_package() {
     
     echo "Installing $package..."
     if [[ $type == "cask" ]]; then
+        # Install casks (automatically goes to user's Applications directory via HOMEBREW_CASK_OPTS)
         if brew install --cask "$package" 2>/dev/null; then
-            echo "✅ Successfully installed $package"
+            echo "Successfully installed $package to $USER_APPLICATIONS_DIR"
         else
-            echo "⚠️  Failed to install $package (continuing...)"
+            echo "⚠️ Failed to install $package (continuing...)"
         fi
     else
         if brew install "$package" 2>/dev/null; then
-            echo "✅ Successfully installed $package"
+            echo "Successfully installed $package"
         else
-            echo "⚠️  Failed to install $package (continuing...)"
+            echo "⚠️ Failed to install $package (continuing...)"
         fi
     fi
 }
@@ -45,9 +49,9 @@ echo "📦 Installing packages..."
 install_package "nvm" "formula"
 install_package "karabiner-elements" "cask"
 
-# Auto-open Karabiner-Elements
+# Auto-open Karabiner-Elements from user Applications directory
 echo "🚀 Opening Karabiner-Elements so config changes take effect and our keybinding are immediately available..."
-open -a "Karabiner-Elements" 2>/dev/null || echo "⚠️  Could not auto-open Karabiner-Elements"
+open -a "$USER_APPLICATIONS_DIR/Karabiner-Elements.app" 2>/dev/null || echo "⚠️  Could not auto-open Karabiner-Elements"
 
 # Add to next steps queue
 add_next_step "⌨️ Open Karabiner-Elements to have your keybindings take immediate effect"
