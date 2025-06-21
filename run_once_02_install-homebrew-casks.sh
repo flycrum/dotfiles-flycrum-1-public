@@ -45,6 +45,10 @@ install_package "nvm" "formula"
 install_package "karabiner-elements" "cask"
 
 echo ""
+echo "❗❗❗ Now open the Karabiner-Elements app to have your keybindings take effect immediately ❗❗❗"
+echo ""
+
+echo ""
 echo "🎉 Essential tools installation complete!"
 echo ""
 echo "📝 Next steps:"

@@ -15,10 +15,26 @@ if ! command -v brew &> /dev/null; then
         # Apple Silicon Mac
         echo "Adding Homebrew to PATH (Apple Silicon)..."
         eval "$(/opt/homebrew/bin/brew shellenv)"
+        BREW_PREFIX="/opt/homebrew"
     else
         # Intel Mac
         echo "Adding Homebrew to PATH (Intel)..."
         eval "$(/usr/local/bin/brew shellenv)"
+        BREW_PREFIX="/usr/local"
+    fi
+    
+    # Permanently add to shell profile (.zprofile created by run_once_00_zprofile.sh)
+    SHELL_PROFILE="$HOME/.zprofile"
+    BREW_SHELLENV_LINE='eval "$('$BREW_PREFIX'/bin/brew shellenv)"'
+    
+    if ! grep -q "$BREW_PREFIX/bin/brew shellenv" "$SHELL_PROFILE" 2>/dev/null; then
+        echo "Adding Homebrew to $SHELL_PROFILE for permanent PATH..."
+        echo "" >> "$SHELL_PROFILE"
+        echo "# Add Homebrew to PATH" >> "$SHELL_PROFILE"
+        echo "$BREW_SHELLENV_LINE" >> "$SHELL_PROFILE"
+        echo "✅ Added Homebrew to shell profile"
+    else
+        echo "✅ Homebrew already in shell profile"
     fi
     
     echo "✅ Homebrew installed successfully!"
