@@ -3,6 +3,11 @@
 # Foundation script - must succeed for everything else to work
 set -e
 
+# Function to add steps to the next steps queue
+add_next_step() {
+    echo "$1" >> "/tmp/chezmoi_next_steps_$$"
+}
+
 echo "🍺 Installing Homebrew..."
 
 # Install Homebrew if not already installed
@@ -33,6 +38,9 @@ if ! command -v brew &> /dev/null; then
         echo "# Add Homebrew to PATH" >> "$SHELL_PROFILE"
         echo "$BREW_SHELLENV_LINE" >> "$SHELL_PROFILE"
         echo "✅ Added Homebrew to shell profile"
+        
+        # Source the profile immediately so brew is available in this session
+        source "$SHELL_PROFILE"
     else
         echo "✅ Homebrew already in shell profile"
     fi
@@ -48,4 +56,7 @@ if ! brew --version &> /dev/null; then
     exit 1
 fi
 
-echo "🎉 Homebrew setup complete!"
+# Add to next steps queue
+add_next_step "🔁 Restart terminal for Homebrew PATH changes to take effect"
+
+echo "🍺 Homebrew setup complete!"

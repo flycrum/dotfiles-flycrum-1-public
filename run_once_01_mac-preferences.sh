@@ -3,8 +3,12 @@
 # macOS system preferences configuration
 set -e
 
-echo "⚙️  Configuring macOS preferences..."
+# Function to add steps to the next steps queue
+add_next_step() {
+    echo "$1" >> "/tmp/chezmoi_next_steps_$$"
+}
 
+echo "⚙️ Configuring macOS preferences..."
 # Finder preferences
 echo "📁 Configuring Finder..."
 # Show hidden files in Finder
@@ -36,5 +40,7 @@ killall Finder
 # Kill and restart Dock
 killall Dock
 
-echo "✅ macOS preferences configured successfully!"
-echo "📝 Note: Some changes may require a logout/login to take full effect"
+# Add to next steps queue
+add_next_step "💻 Some macOS preference changes may require a logout/login to take full effect"
+
+echo "💻 macOS preferences configured successfully!"

@@ -3,6 +3,11 @@
 # Shell tools and dependencies for zsh configuration
 set -e
 
+# Function to add steps to the next steps queue
+add_next_step() {
+    echo "$1" >> "/tmp/chezmoi_next_steps_$$"
+}
+
 echo "🐚 Installing shell tools and dependencies..."
 
 # Ensure Homebrew is in PATH
@@ -48,10 +53,18 @@ install_package "zoxide" "formula"
 echo "🔤 Installing required font..."
 install_package "font-meslo-lg-nerd-font" "cask"
 
+# Fix zsh compinit security warnings
+echo "🔧 Fixing zsh completion permissions..."
+if command -v compaudit &> /dev/null; then
+    # Get list of insecure directories and fix them
+    compaudit 2>/dev/null | xargs chmod g-w,o-w 2>/dev/null || true
+    echo "✅ Fixed zsh completion permissions"
+else
+    echo "⚠️  compaudit not available, skipping permission fix"
+fi
+
+# Add to next steps queue
+add_next_step "▶️ Start Zinit plugin manager to auto-install on first shell startup"
+
 echo ""
 echo "🎉 Shell tools installation complete!"
-echo ""
-echo "📝 Next steps:"
-echo "   • Restart terminal for changes to take effect"
-echo "   • Zinit plugin manager will auto-install on first shell startup"
-echo "   • Your Oh My Posh themes are ready to use"

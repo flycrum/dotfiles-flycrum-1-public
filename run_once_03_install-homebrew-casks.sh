@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Function to add steps to the next steps queue
+add_next_step() {
+    echo "$1" >> "/tmp/chezmoi_next_steps_$$"
+}
+
 echo "🔧 Installing essential tools..."
 
 # Ensure Homebrew is in PATH
@@ -44,13 +49,12 @@ echo "📦 Installing packages..."
 install_package "nvm" "formula"
 install_package "karabiner-elements" "cask"
 
-echo ""
-echo "❗❗❗ Now open the Karabiner-Elements app to have your keybindings take effect immediately ❗❗❗"
-echo ""
+# Auto-open Karabiner-Elements
+echo "🚀 Opening Karabiner-Elements so config changes take effect and our keybinding are immediately available..."
+open -a "Karabiner-Elements" 2>/dev/null || echo "⚠️  Could not auto-open Karabiner-Elements"
+
+# Add to next steps queue
+add_next_step "⌨️ Open Karabiner-Elements to have your keybindings take immediate effect"
 
 echo ""
-echo "🎉 Essential tools installation complete!"
-echo ""
-echo "📝 Next steps:"
-echo "   • Restart terminal to use nvm"
-echo "   • Open Karabiner-Elements to configure keyboard" 
+echo "🪣 Homebrew Casks installation complete!"
