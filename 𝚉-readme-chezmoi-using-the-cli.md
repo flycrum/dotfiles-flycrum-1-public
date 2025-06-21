@@ -93,6 +93,28 @@ chezmoi --source ~/.local/share/chezmoi-private update
 alias chezmoi-private="chezmoi --source ~/.local/share/chezmoi-private"
 ```
 
+## Force run scripts
+
+1. Option 1: Check if Homebrew is actually installed
+```bash
+# Check if Homebrew exists
+ls -la /opt/homebrew/bin/brew
+# Try to run it directly
+/opt/homebrew/bin/brew --version
+```
+
+2. Option 2: Clear chezmoi's script state to force re-run
+```bash
+chezmoi state delete-bucket --bucket=scriptState
+```
+
+3. Option 3: Run the scripts manually to debug
+```bash
+cd ~/.local/share/chezmoi
+./run_once_01_install-homebrew.sh
+./run_once_02_install-homebrew-casks.sh
+```
+
 ## Tips
 
 - Use `-v` (verbose) flag to see exactly what chezmoi is doing
