@@ -97,7 +97,10 @@ bindkey '^N' history-search-forward       # Ctrl+N
 # Word navigation (iTerm default sequences)
 bindkey '^[[1;3D' backward-word           # Option+Left Arrow
 bindkey '^[[1;3C' forward-word            # Option+Right Arrow
-# bindkey '^?' backward-kill-word           # Option+Delete (sends DEL character)
+# Line editing shortcuts
+bindkey '^U' kill-whole-line              # Ctrl+U or CMD+Delete (kill whole line)
+bindkey '^K' kill-line                    # Ctrl+K (kill from cursor to end)
+bindkey '^W' backward-kill-word           # Ctrl+W (kill word backward)
 
 # Aliases
 alias ll='ls -la'
